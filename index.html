@@ -18,8 +18,11 @@
 
 <body id="page-top" data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="72">
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-secondary text-uppercase" id="mainNav">
-        <div class="container"><a class="navbar-brand bounce animated" href="#page-top">Kevin Baumann</a><button
-                data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+        <div class="container"><a class="navbar-brand" href="#page-top">
+                <div>
+                    <h1 id="typedtext">Kevin Baumann</h1>
+                </div>
+            </a><button data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
                 class="navbar-toggler text-white bg-primary navbar-toggler-right text-uppercase rounded"
                 aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><i
                     class="fa fa-bars"></i></button>
@@ -37,8 +40,9 @@
     </nav>
     <header class="text-center text-white bg-primary masthead" data-aos="fade-up" data-aos-duration="950"
         data-aos-delay="100" data-aos-once="true" style="background: rgb(24,60,188);">
-        <div class="container" data-aos="fade" data-aos-delay="800" data-aos-once="true"><img
-                class="img-fluid d-block mx-auto swing animated mb-5" src="assets/img/user%20profile.jpg">
+        <div class="container" data-aos="fade" data-aos-delay="800" data-aos-once="true">
+            <img class="img-fluid d-block mx-auto swing animated mb-5" style="height: 50%; width: 50%;"
+                src="Images/logo.png">
             <h1>Kevin Baumann</h1>
             <h2 class="font-weight-light mb-0">Web Developer - Game Developer - Sports Enthusiast</h2>
         </div>
@@ -96,6 +100,8 @@
     <section class="text-white bg-primary mb-0" data-aos="fade-up" id="about">
         <div class="container">
             <h2 class="text-uppercase text-center text-white">About<br><br></h2>
+            <img class="img-fluid d-block mx-auto swing animated mb-5" style="height: 250px; width: 250px;"
+                src="Images/ProfilePictureMaker.png">
             <div class="row">
                 <div class="col-lg-4 ms-auto">
                     <p class="lead">Hi, I'm an aspiring game and web developer in Vancouver, British Columbia. I'm
@@ -259,8 +265,10 @@
                                     by giving you a list of charitable organizations that work towards offsetting CO2
                                     around the globe, by directly donating to them. <br><br>Languages used: HTML, Dart,
                                     JS<br>Hosting: Firebase&nbsp;<br><br><a
-                                        href="https://github.com/kyleburnette/COMP-2800-Team-BBY-05-Emitty/releases/tag/Version-1.0" target="_blank">GitHub
-                                        link</a><br><a href="https://www.youtube.com/watch?v=5qYL0sXwdEs" target="_blank">See
+                                        href="https://github.com/kyleburnette/COMP-2800-Team-BBY-05-Emitty/releases/tag/Version-1.0"
+                                        target="_blank">GitHub
+                                        link</a><br><a href="https://www.youtube.com/watch?v=5qYL0sXwdEs"
+                                        target="_blank">See
                                         presentation</a><br></p>
                             </div>
                         </div>
@@ -291,7 +299,8 @@
                                     meetings, and led the sprints. <br><br><a
                                         href="https://onedrive.live.com/edit.aspx?resid=87A0D8BB5BE84314!142391&amp;ithint=file%2cpptx&amp;authkey=!ABWqIGSz4ABAT_k"
                                         target="_blank">See project PowerPoint presentation</a><br><a
-                                        href="github.com/sakitasaka/FitMatch" target="_blank">See project source code</a><br><br></p>
+                                        href="github.com/sakitasaka/FitMatch" target="_blank">See project source
+                                        code</a><br><br></p>
                             </div>
                         </div>
                     </div>
@@ -316,7 +325,8 @@
                                 <p class="mb-5"><br>Built a Smart Mirror with a Raspberry Pi that shows your reflection
                                     like any normal mirror would, but also shows the time and a few current world
                                     headlines along with a greeting or compliment.<br><br><a
-                                        href="https://docs.google.com/presentation/d/1qYlRDGSurqQsCYDQ0ThSn_byg1l9GDKVAeIqxhzR7VQ/edit?usp=sharing" target="_blank">See
+                                        href="https://docs.google.com/presentation/d/1qYlRDGSurqQsCYDQ0ThSn_byg1l9GDKVAeIqxhzR7VQ/edit?usp=sharing"
+                                        target="_blank">See
                                         project presentation</a></p>
                             </div>
                         </div>
@@ -343,7 +353,8 @@
                                     like addition, multiplication, division, subtraction and then also you can open up a
                                     new window to make a few more advanced calculations. Also, there is a bonus with
                                     radio buttons that make math jokes when you click them.<br><br><a
-                                        href="https://github.com/baumannkev/GUI-Python-Calculator" target="_blank">See project source
+                                        href="https://github.com/baumannkev/GUI-Python-Calculator" target="_blank">See
+                                        project source
                                         code</a></p>
                             </div>
                         </div>
@@ -359,6 +370,43 @@
     <script src="assets/js/bs-init.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="assets/js/freelancer.js"></script>
+
+    <script>
+        // set up text to print, each item in array is new line
+        var aText = new Array(
+            "Kevin Baumann"
+        );
+        var iSpeed = 100; // time delay of print out
+        var iIndex = 0; // start printing array at this posision
+        var iArrLength = aText[0].length; // the length of the text array
+        var iScrollAt = 20; // start scrolling up at this many lines
+    
+        var iTextPos = 0; // initialise text position
+        var sContents = ''; // initialise contents variable
+        var iRow; // initialise current row
+    
+        function typewriter() {
+            sContents = ' ';
+            iRow = Math.max(0, iIndex - iScrollAt);
+            var destination = document.getElementById("typedtext");
+    
+            while (iRow < iIndex) {
+                sContents += aText[iRow++] + '<br />';
+            }
+            destination.innerHTML = sContents + aText[iIndex].substring(0, iTextPos) + "_";
+            if (iTextPos++ == iArrLength) {
+                iTextPos = 0;
+                iIndex++;
+                if (iIndex != aText.length) {
+                    iArrLength = aText[iIndex].length;
+                    setTimeout("typewriter()", 500);
+                }
+            } else {
+                setTimeout("typewriter()", iSpeed);
+            }
+        }
+        typewriter();
+    </script>
 
     <script>
 
