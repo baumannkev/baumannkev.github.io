@@ -7,6 +7,18 @@ let ydirection = 1; // Top to Bottom
 
 let points = 0;
 let fruits = []; // array of fruits
+let numOfFruits = 50;
+
+// Create a variable for button object
+var color_button;
+
+// A sound file object
+let dingdong;
+var music;
+
+function preload() {
+  music = loadSound("sounds/music.wav");
+}
 
 function mousePressed() {
   for (let i = 0; i < fruits.length; i++) {
@@ -14,11 +26,24 @@ function mousePressed() {
   }
 }
 
+function change_amount_of_fruits_to_10() {
+  numOfFruits = 10;
+  setup();
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  music.loop();
   noStroke();
   frameRate(60);
   ellipseMode(RADIUS);
+
+  // Create the button
+  // color_button = createButton("10 Bubbles");
+  // // Position the button
+  // color_button.position(200, 20);
+
+  // color_button.mouseClicked(change_amount_of_fruits_to_10);
 
   textAlign(10, 10);
   r = random(255);
@@ -26,14 +51,21 @@ function setup() {
   b = random(255);
 
   // Set the starting position of the shape
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < numOfFruits; i++) {
     fruits.push(new Fruit());
   }
+
+  // Load the sound file.
+  // We have included both an MP3 and an OGG version.
+
+  soundFormats('mp3', 'ogg', 'wav');
+  dingdong = loadSound('sounds/coin.wav');
+  
+
 }
 
 function draw() {
   background(0, 0, 0);
-
   fill(255);
   text('Points: ' + points, 100, 80);
 
@@ -41,8 +73,8 @@ function draw() {
     fruits[i].move();
     fruits[i].display();
 
-    if(fruits[i].pressed == true) {
-        fruits.splice(i, 1);
+    if (fruits[i].pressed == true) {
+      fruits.splice(i, 1);
     }
   }
 }
@@ -55,23 +87,31 @@ class Fruit {
     this.col = color(random(255), random(255), random(255));
     // fill(r, g, b, 200);
 
+    this.speed = random(1,5);
     this.x = random(width);
     this.y = random(height);
     this.diameter = random(10, 30);
-    this.xspeed = random(1, 3);
-    this.yspeed = random(1, 3)
+    this.xspeed = this.speed;
+    this.yspeed = this.speed;
     this.xdirection = random(-5, 5);
     this.ydirection = random(-5, 5);
     this.pressed = false;
     this.lifespan = 255;
   }
 
-  clicked(){
+  clicked() {
     var d = dist(mouseX, mouseY, this.x, this.y);
     if (d < (this.diameter)) {
-      this.col = color(random(255), random(255), random(255)); 
+      this.col = color(random(255), random(255), random(255));
       this.pressed = true;
-      points++;
+      dingdong.play();
+      if (this.diameter < 15 ){
+        points += 10;
+      } else if (15 <= this.diameter <= 30 ){points += 5;}
+
+      if (4.5 < this.speed <= 5){
+        points += 10;
+      } else if (1 <= this.speed <= 4.5){points += 5;}
     }
   }
 
