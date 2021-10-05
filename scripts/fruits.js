@@ -1,4 +1,6 @@
 let font, fontsize = 40;
+let minDiameter = 20;
+let maxDiameter = 40;
 
 // for red, green, and blue color values
 let r, g, b;
@@ -11,13 +13,24 @@ let numOfFruits = 50;
 
 // Create a variable for button object
 var color_button;
+let entry1;
 
 // A sound file object
 let dingdong;
 var music;
 
+let fruitImages = [];
+
 function preload() {
   music = loadSound("sounds/music.wav");
+  winImage = loadImage("Images/banner.png");
+
+  fruitImages[0] = loadImage("Images/projects/Fruits Game/sprites/apple.png");
+  fruitImages[1] = loadImage("Images/projects/Fruits Game/sprites/cherry.png")
+  fruitImages[2] = loadImage("Images/projects/Fruits Game/sprites/hen.png")
+  fruitImages[3] = loadImage("Images/projects/Fruits Game/sprites/bill.png")
+  fruitImages[4] = loadImage("Images/projects/Fruits Game/sprites/pear.png")
+  fruitImages[5] = loadImage("Images/projects/Fruits Game/sprites/ruby.png")
 }
 
 function mousePressed() {
@@ -49,10 +62,10 @@ function setup() {
   r = random(255);
   g = random(255);
   b = random(255);
-
   // Set the starting position of the shape
   for (let i = 0; i < numOfFruits; i++) {
-    fruits.push(new Fruit());
+    var r = floor(random(0, fruitImages.length));
+    fruits.push(new Fruit(fruitImages[r]));
   }
 
   // Load the sound file.
@@ -60,7 +73,6 @@ function setup() {
 
   soundFormats('mp3', 'ogg', 'wav');
   dingdong = loadSound('sounds/coin.wav');
-  
 
 }
 
@@ -68,7 +80,6 @@ function draw() {
   background(0, 0, 0);
   fill(255);
   text('Points: ' + points, 100, 80);
-
   for (let i = 0; i < fruits.length; i++) {
     fruits[i].move();
     fruits[i].display();
@@ -77,26 +88,28 @@ function draw() {
       fruits.splice(i, 1);
     }
   }
+  winScreen();
 }
 
 // Jitter class
 class Fruit {
-  constructor() {
+  constructor(img) {
     strokeWeight(2);
     stroke(r, g, b);
     this.col = color(random(255), random(255), random(255));
     // fill(r, g, b, 200);
 
-    this.speed = random(1,5);
+    this.speed = random(1, 5);
     this.x = random(width);
     this.y = random(height);
-    this.diameter = random(10, 30);
+    this.diameter = random(minDiameter, maxDiameter);
     this.xspeed = this.speed;
     this.yspeed = this.speed;
     this.xdirection = random(-5, 5);
     this.ydirection = random(-5, 5);
     this.pressed = false;
     this.lifespan = 255;
+    this.img = img;
   }
 
   clicked() {
@@ -104,14 +117,15 @@ class Fruit {
     if (d < (this.diameter)) {
       this.col = color(random(255), random(255), random(255));
       this.pressed = true;
+      console.log("Fruits: ", fruits);
       dingdong.play();
-      if (this.diameter < 15 ){
+      if (this.diameter < (minDiameter + 5)) {
         points += 10;
-      } else if (15 <= this.diameter <= 30 ){points += 5;}
+      } else if (15 <= this.diameter <= 30) { points += 5; }
 
-      if (4.5 < this.speed <= 5){
+      if (4.5 < this.speed <= 5) {
         points += 10;
-      } else if (1 <= this.speed <= 4.5){points += 5;}
+      } else if (1 <= this.speed <= 4.5) { points += 5; }
     }
   }
 
@@ -130,7 +144,29 @@ class Fruit {
   }
   display() {
     fill(this.col);
-    ellipse(this.x, this.y, this.diameter, this.diameter);
+    image(this.img, this.x, this.y, this.diameter, this.diameter);
+    // ellipse(this.x, this.y, this.diameter, this.diameter);
+  }
+}
+
+////////////////////////////////////////////////////////////////////// winScreen
+function winScreen() {
+  if (fruits.length == 0) {
+    fill(255);
+    stroke(0);
+    strokeWeight(10);
+    textSize(50);
+    text("YOU WIN", width / 2, height / 2);
+
+
+    createSpan("What's your name? ", width / 2, height / 2); //label for entry1
+    // createInput([value], [type])
+    // type: "text" (default), "number",
+    // "date", "password", "email", etc.
+    entry1 = createInput();
+    //If text in the entry field changes, call
+    //the entryCallback function.
+    entry1.changed(entryCallback);
   }
 }
 
