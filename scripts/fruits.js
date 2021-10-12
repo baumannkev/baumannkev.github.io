@@ -1,51 +1,117 @@
-let font, fontsize = 40;
-let minDiameter = 20;
-let maxDiameter = 40;
+let timer = 1000;
+let nextChange = timer; //syncs the timer and change rate
 
+
+var stage = 0;
+// 0 = splash
+// 1 = level 1
+// win screen
+// 2 = level 2
+// 3 = level 3
+let font, fontsize = 40;
+let minDiameter = 30;
+let maxDiameter = 60;
 // for red, green, and blue color values
 let r, g, b;
 let xdirection = 1; // Left or Right
 let ydirection = 1; // Top to Bottom
 
-let points = 0;
+
 let fruits = []; // array of fruits
-let numOfFruits = 50;
+let numOfFruits = 10;
+
+
+
+let bombs = [];
+let easyButton;
+let mediumButton;
+let hardButton;
+let startButton;
+
+// text('Choose your difficulty', width/2, 510);
+//   easyButton = createButton('Easy');
+//   easyButton.position(width/2 + 200, 650);
+//   mediumButton = createButton('Medium');
+//   mediumButton.position(width/2 + 300, 650);
+//   hardButton = createButton('Hard');
+//   hardButton.position(width/2 + 400, 650);
+	
+// 	//text('CLICK THE SCREEN TO START', width/2, 590);
+//   startButton = createButton('Click Here To Start');
+//   startButton.position(width/2 + 280, 800);
+//   //startButton.mousePressed(level1);
+	
 
 // Create a variable for button object
 var color_button;
 let entry1;
+let radio1;
 
 // A sound file object
 let dingdong;
 var music;
+var bombAnim;
 
 let fruitImages = [];
 
+//Counters
+var totalTime; //totat time of program running
+var splashTime; //amount of time on splashscreen only
+var gameTime; //amount of time in game only
+var timeLimit = 10; //how much time do you have to succeed?
+
+let points = 0; //Number of points accumulated
+let bombsHit = 0; //number of bombs clicked
+let fruitsHit = 0; //number of fruits clicked
+
+// Multimedia
+var landscape;
 function preload() {
+  landscape = loadImage("Images/projects/Fruits Game/fruitsBack.png");
   music = loadSound("sounds/music.wav");
   winImage = loadImage("Images/banner.png");
 
-  fruitImages[0] = loadImage("Images/projects/Fruits Game/sprites/apple.png");
-  fruitImages[1] = loadImage("Images/projects/Fruits Game/sprites/cherry.png")
-  fruitImages[2] = loadImage("Images/projects/Fruits Game/sprites/hen.png")
-  fruitImages[3] = loadImage("Images/projects/Fruits Game/sprites/bill.png")
-  fruitImages[4] = loadImage("Images/projects/Fruits Game/sprites/pear.png")
-  fruitImages[5] = loadImage("Images/projects/Fruits Game/sprites/ruby.png")
+  bombAnim = loadAnimation("Images/projects/Fruits Game/sprites/bomba/aliendropping0001.png", "Images/projects/Fruits Game/sprites/bomba/aliendropping0002.png", "Images/projects/Fruits Game/sprites/bomba/aliendropping0003.png",
+    "Images/projects/Fruits Game/sprites/bomba/aliendropping0004.png", "Images/projects/Fruits Game/sprites/bomba/aliendropping0005.png", "Images/projects/Fruits Game/sprites/bomba/aliendropping0006.png",
+    "Images/projects/Fruits Game/sprites/bomba/aliendropping0007.png", "Images/projects/Fruits Game/sprites/bomba/aliendropping0008.png", "Images/projects/Fruits Game/sprites/bomba/aliendropping0009.png");
+
+  bombImage = loadImage("Images/projects/Fruits Game/sprites/bomb64.png");
+
+  fruitImages[0] = loadImage("Images/projects/Fruits Game/sprites/red-apple.png");
+  fruitImages[1] = loadImage("Images/projects/Fruits Game/sprites/red-cherry.png")
+  fruitImages[2] = loadImage("Images/projects/Fruits Game/sprites/green-apple.png")
+  fruitImages[3] = loadImage("Images/projects/Fruits Game/sprites/banana.png")
+  fruitImages[4] = loadImage("Images/projects/Fruits Game/sprites/black-berry-light.png")
+  fruitImages[5] = loadImage("Images/projects/Fruits Game/sprites/green-grape.png")
+  fruitImages[6] = loadImage("Images/projects/Fruits Game/sprites/strawberry.png")
+  fruitImages[7] = loadImage("Images/projects/Fruits Game/sprites/watermelon.png")
+  fruitImages[8] = loadImage("Images/projects/Fruits Game/sprites/lemon.png")
+  fruitImages[9] = loadImage("Images/projects/Fruits Game/sprites/orange.png")
+  fruitImages[10] = loadImage("Images/projects/Fruits Game/sprites/peach.png")
+
 }
 
-function mousePressed() {
-  for (let i = 0; i < fruits.length; i++) {
-    fruits[i].clicked();
-  }
-}
+// function change_amount_of_fruits_to_10() {
+//   numOfFruits = 10;
+//   setup();
+// }
 
-function change_amount_of_fruits_to_10() {
-  numOfFruits = 10;
-  setup();
+var cnv;
+
+function centerCanvas() {
+  var x = (windowWidth - width) / 2;
+  var y = (windowHeight - height) / 2;
+  cnv.position(x, y);
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  cnv = createCanvas(1000, 800);
+  centerCanvas();
+  rectMode(CENTER);
+	textAlign(CENTER);
+  imageMode(CENTER);
+  background(255, 0, 200);
+  
   music.loop();
   noStroke();
   frameRate(60);
@@ -66,6 +132,11 @@ function setup() {
   for (let i = 0; i < numOfFruits; i++) {
     var r = floor(random(0, fruitImages.length));
     fruits.push(new Fruit(fruitImages[r]));
+    bombs.push(new Bomb(bombImage));
+  }
+
+  function windowResized() {
+    centerCanvas();
   }
 
   // Load the sound file.
@@ -73,32 +144,216 @@ function setup() {
 
   soundFormats('mp3', 'ogg', 'wav');
   dingdong = loadSound('sounds/coin.wav');
-
 }
 
+// function hideButtons() {
+//   easyButton.hide();
+//   mediumButton.hide();
+//   hardButton.hide();
+//   startButton.hide();
+// }
+
+function mousePressed() {
+  // if (startButton.mousePressed()){
+  //   hideButtons();
+  //   stage = 1;
+  // }
+  // bombs[0].display();
+  for (let i = 0; i < fruits.length; i++) {
+    fruits[i].clicked();
+  }
+
+  for (let i = 0; i < bombs.length; i++) {
+    bombs[i].clicked();
+  }
+}
+
+
+
 function draw() {
-  background(0, 0, 0);
-  fill(255);
-  text('Points: ' + points, 100, 80);
+  if(stage == 0){
+		splash();
+	}//close = 0
+
+  if(stage == 1){
+		level1();
+	}//close = 1
+
+  if (stage == 3){
+    loseScreen();
+  }
+
+  if (stage == 4){
+    winScreen();
+  }
+
+  if (fruits.length == 0){
+    gameTime = gameTime;
+    stage = 4;
+  }
+  
+
+  if (mouseIsPressed == true && stage != 4){
+		stage = 1;
+	}//click starts game
+
+  totalTime = millis(); //start timer
+
+  // background(100, 0, 0);
+  // fill(210, 100, 0);
+
+  ///////////////////////////////////////////splash
+function splash(){
+	
+	//timer stuff
+	splashTime = totalTime;//begin splashscreen timer
+	
+	//appearance of game
+	background(150, 230, 240); //sky blue
+	image(landscape, width / 2, height/ 2, width, height);
+	
+	//title
+	//textFont();
+	fill(255);
+	stroke(0);
+	strokeWeight(4);
+	textSize(30);
+	text('Fruits Game', width/2, 120);
+	textSize(30);
+	text('BY: Kevin Baumann', width/2, 180);
+	
+	//instructions
+	text('HOW TO PLAY:', width/2, 270);
+	text('Click all the fruits on the screen!', width/2, 330);
+	text('WATCH OUT FOR BOMBS', width/2, 380);
+  text('EACH BOMB CLICKED IS - 10 POINTS', width/2, 420);
+  
+	text('OBTAIN ALL FRUITS AS FAST AS YOU CAN', width/2, 480);
+  text('CLICK THE SCREEN TO START THE GAME', width/2, 630);
+  
+}//close splash
+
+///////////////////////////////////////////level1
+function level1(){
+  clear();
+  background(150, 230, 240); //sky blue
+  //window frame
+	noFill();
+	stroke(0);
+	strokeWeight(2);
+	rect(width/2, height/2, width, height);
+
+  //text(`${round(millis() / 1000)} seconds have gone by!`, 20, 100);
+  //text('Points: ' + points, 100, 80);
   for (let i = 0; i < fruits.length; i++) {
     fruits[i].move();
     fruits[i].display();
-
     if (fruits[i].pressed == true) {
       fruits.splice(i, 1);
     }
+
+    // if (millis() > nextChange) {
+    // bombs[0].display();
+    // nextChange = millis() + timer;
+    // console.log(`time elapsed: ${round(millis() / 1000)}`);
+    // }
   }
-  winScreen();
+
+  for (let i = 0; i < bombs.length; i++) {
+    bombs[i].display();
+
+    if (bombs[i].pressed == true) {
+      bombs.splice(i, 1);
+    }
+  }
+  //scoreboard
+	//textFont(marioFont);
+	fill(255);
+	stroke(0);
+	strokeWeight(2);
+	textSize(20);
+	text('POINTS: ', 50, 50);
+	text(points, 110, 50); 
+
+  gameTime = int((totalTime-splashTime)/1000); //convert to seconds and integer
+  text(gameTime, 700, 50); //display  timer
+	
+	//textFont(marioFont);
+	fill(255);
+	stroke(0);
+	strokeWeight(2);
+	textSize(30);
+	text('TIME:', 600, 50);
 }
 
+function winScreen(){
+	image(landscape, width/2, height/2, width, height);
+	//textFont(marioFont);
+	fill(255);
+	stroke(0);
+	strokeWeight(5);
+	textSize(100);
+	text('YOU WIN', width/2, 200);
+  textSize(40);
+  strokeWeight(2);
+  text('Points:' + points, width/2, 370);
+	text('Time: ' + gameTime + " seconds", width/2, 430);
+  
+	text('Number of fruits hit: ' + fruitsHit, width/2, 480);
+	text('Number of bombs hit: ' + bombsHit, width/2, 530);
+
+  text('Refresh to play again', width/2, 700);
+  if (mouseIsPressed == true) {
+    stage = 0;
+  }
+
+}//close you win function
+// function loseScreen() {
+//   image(landscape, width/2, height/2, width, height);
+// 	//textFont(marioFont);
+// 	fill(255);
+// 	stroke(0);
+// 	strokeWeight(10);
+// 	textSize(200);
+// 	text('YOU LOSE', width/2, height/2);
+// }
+
+  // var timeElapsed = millis() - lastPrint;
+  // //console.log(timeElapsed);
+
+  // if (timeElapsed > 3000) {
+  //   i++;
+  //   console.log(i);
+  //   lastPrint = millis();
+  // }
+
+  // for (let i = 0; i < bombs.length; i++) {
+  //   if (millis() > nextChange) {
+  //     bombs[i].display();
+  //     // nextChange = millis() + timer;
+  //     // console.log(`time elapsed: ${round(millis() / 1000)}`);
+  //   }
+  // }
+
+  // winScreen();
+}
+
+// class Object {
+//   constructor(img){
+//     this.x = random(width);
+//     this.y = random(height);
+//     this.diameter = 30;
+//     this.img = img;
+//     this.pressed = false;
+//   }
+// }
+
 // Jitter class
-class Fruit {
+class Fruit  {
   constructor(img) {
     strokeWeight(2);
     stroke(r, g, b);
     this.col = color(random(255), random(255), random(255));
-    // fill(r, g, b, 200);
-
     this.speed = random(1, 5);
     this.x = random(width);
     this.y = random(height);
@@ -108,7 +363,6 @@ class Fruit {
     this.xdirection = random(-5, 5);
     this.ydirection = random(-5, 5);
     this.pressed = false;
-    this.lifespan = 255;
     this.img = img;
   }
 
@@ -119,6 +373,7 @@ class Fruit {
       this.pressed = true;
       console.log("Fruits: ", fruits);
       dingdong.play();
+      fruitsHit++;
       if (this.diameter < (minDiameter + 5)) {
         points += 10;
       } else if (15 <= this.diameter <= 30) { points += 5; }
@@ -149,26 +404,55 @@ class Fruit {
   }
 }
 
-////////////////////////////////////////////////////////////////////// winScreen
-function winScreen() {
-  if (fruits.length == 0) {
-    fill(255);
-    stroke(0);
-    strokeWeight(10);
-    textSize(50);
-    text("YOU WIN", width / 2, height / 2);
+class Bomb {
+  constructor(img) {
+    this.x = random(width);
+    this.y = random(height);
+    this.diameter = 30;
+    this.img = img;
+    this.pressed = false;
+  }
 
+  display() {
+    //fill(this.col);
+    image(this.img, this.x, this.y, this.diameter, this.diameter);
+    // ellipse(this.x, this.y, this.diameter, this.diameter);
+  }
 
-    createSpan("What's your name? ", width / 2, height / 2); //label for entry1
-    // createInput([value], [type])
-    // type: "text" (default), "number",
-    // "date", "password", "email", etc.
-    entry1 = createInput();
-    //If text in the entry field changes, call
-    //the entryCallback function.
-    entry1.changed(entryCallback);
+  clicked() {
+    var d = dist(mouseX, mouseY, this.x, this.y);
+    if (d < (this.diameter)) {
+      bombsHit++;
+      points -= 10;
+      this.col = color(random(255), random(255), random(255));
+      this.pressed = true;
+      console.log("Bombs: ", bombs);
+      dingdong.play();
+      //stage = 3;
+    }
   }
 }
+
+////////////////////////////////////////////////////////////////////// winScreen
+// function winScreen() {
+//   if (fruits.length == 0) {
+//     fill(255);
+//     stroke(0);
+//     strokeWeight(10);
+//     textSize(50);
+//     text("YOU WIN", width / 2, height / 2);
+
+
+//     createSpan("What's your name? ", width / 2, height / 2); //label for entry1
+//     // createInput([value], [type])
+//     // type: "text" (default), "number",
+//     // "date", "password", "email", etc.
+//     entry1 = createInput();
+//     //If text in the entry field changes, call
+//     //the entryCallback function.
+//     entry1.changed(entryCallback);
+//   }
+// }
 
 // class Ball {
 //   constructor(x, y, r) {
