@@ -18,7 +18,7 @@ let ydirection = 1; // Top to Bottom
 
 
 let fruits = []; // array of fruits
-let numOfFruits = 10;
+let numOfFruits = 30;
 
 
 
@@ -51,6 +51,7 @@ let radio1;
 let dingdong;
 var music;
 var bombAnim;
+let bombSound;
 
 let fruitImages = [];
 
@@ -144,6 +145,7 @@ function setup() {
 
   soundFormats('mp3', 'ogg', 'wav');
   dingdong = loadSound('sounds/coin.wav');
+  bombSound = loadSound('sounds/bomb.mp3');
 }
 
 // function hideButtons() {
@@ -427,7 +429,7 @@ class Bomb {
       this.col = color(random(255), random(255), random(255));
       this.pressed = true;
       console.log("Bombs: ", bombs);
-      dingdong.play();
+      bombSound.play();
       //stage = 3;
     }
   }
